@@ -34,7 +34,10 @@ repositories {
     maven {
         name = 'CleanroomMC'
         url = 'https://maven.cleanroommc.com'
-        content { includeGroup 'zone.rong' }
+        content {
+            includeGroup 'zone.rong'
+            includeGroup 'com.cleanroommc'
+        }
     }
     maven {
         name = 'CurseMaven'
