@@ -6,15 +6,21 @@
 #   <server-dir> must contain an installed Forge server (forge-*.jar + libraries/).
 set -uo pipefail
 
-DIR="$1"; PELT="$2"; FERMIUM="$3"
+# Resolve everything to absolute paths before we cd into the server dir.
+DIR="$(readlink -f "$1")"; PELT="$(readlink -f "$2")"; FERMIUM="$(readlink -f "$3")"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 BOOT_TIMEOUT="${BOOT_TIMEOUT:-600}"
+
+for f in "$PELT" "$FERMIUM"; do
+  [ -f "$f" ] || { echo "::error::missing jar: $f"; exit 1; }
+done
+[ -d "$DIR" ] || { echo "::error::missing server dir: $DIR"; exit 1; }
 
 cd "$DIR"
 rm -rf mods logs world config/pelt config/pelt.cfg crash-reports
 mkdir -p mods
-cp "$FERMIUM" mods/
-cp "$PELT" mods/
+cp "$FERMIUM" mods/ && cp "$PELT" mods/ || { echo "::error::could not copy jars into mods/"; exit 1; }
+[ "$(ls mods/*.jar | wc -l)" -eq 2 ] || { echo "::error::expected exactly 2 jars in mods/"; ls -la mods; exit 1; }
 echo "eula=true" > eula.txt
 cat > server.properties <<'PROPS'
 online-mode=false
