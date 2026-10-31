@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "pelt.mixin",
+  "plugin": "pelt.mixinsupport.PeltMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.pelt.refmap.json",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "MixinPlayerList",
+    "EntityTrackerAccessor"
+  ]
+}
