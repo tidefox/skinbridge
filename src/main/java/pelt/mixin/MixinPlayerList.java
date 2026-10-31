@@ -19,7 +19,10 @@ import pelt.PeltHooks;
 @Mixin(PlayerList.class)
 public abstract class MixinPlayerList {
 
-    @Inject(method = "initializeConnectionToPlayer", at = @At("HEAD"))
+    // Forge patches this method to (NetworkManager, EntityPlayerMP, NetHandlerPlayServer), but
+    // the MCP/SRG mappings only describe the vanilla 2-arg version, so the annotation processor
+    // cannot remap it. Match by name only instead: SRG name on a production server, MCP name in dev.
+    @Inject(method = {"initializeConnectionToPlayer", "func_72355_a"}, at = @At("HEAD"), remap = false)
     private void pelt$applyCachedSkin(NetworkManager netManager, EntityPlayerMP player,
                                       NetHandlerPlayServer handler, CallbackInfo ci) {
         PeltHooks.beforePlayerJoin(player);
