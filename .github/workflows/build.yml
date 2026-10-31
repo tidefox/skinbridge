@@ -22,13 +22,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Java 8 is the compile/test toolchain; Gradle itself runs on 21 (last one listed = JAVA_HOME).
+      # Java 8 is the compile/test toolchain; Gradle itself runs on 25, which
+      # RetroFuturaGradle 2.x requires (last one listed = JAVA_HOME).
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: |
             8
-            21
+            25
 
       # Caches ~/.gradle, which includes RetroFuturaGradle's decompiled Minecraft/Forge and assets.
       - uses: gradle/actions/setup-gradle@v4
@@ -80,6 +81,12 @@ jobs:
   smoke:
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both CurseForge uploads of FermiumBooter 1.4.1: original and "(Fix)" re-upload.
+        fermium_file_id: ['7212281', '7279112']
+    name: smoke (FermiumBooter 1.4.1 file ${{ matrix.fermium_file_id }})
     steps:
       - uses: actions/checkout@v4
 
@@ -109,7 +116,7 @@ jobs:
           ls -la
 
       - name: Fetch FermiumBooter ${{ env.FERMIUM_VERSION }}
-        run: ci/fetch-fermium.sh "${{ needs.build.outputs.fermium_file_id }}" "$FERMIUM_VERSION" smoke/fermiumbooter.jar
+        run: ci/fetch-fermium.sh "${{ matrix.fermium_file_id }}" "$FERMIUM_VERSION" smoke/fermiumbooter.jar
 
       - uses: actions/download-artifact@v4
         with:
@@ -122,7 +129,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: smoke-logs
+          name: smoke-logs-${{ matrix.fermium_file_id }}
           path: |
             smoke/server/console.log
             smoke/server/logs/

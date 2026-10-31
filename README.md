@@ -185,14 +185,14 @@ and **B**, ideally vanilla with no CustomSkinLoader, plus one client that has it
 
 ## Building
 
-The build uses RetroFuturaGradle, Gradle 9 (run on JDK 17+), and a Java 8 toolchain:
+The build uses RetroFuturaGradle 2.x and Gradle 9. Gradle must **run on JDK 25**, and it needs a Java 8 toolchain to compile:
 
 ```bash
 ./gradlew build -Porg.gradle.java.installations.fromEnv=JAVA_HOME_8_X64
 ```
 
 The release jar is `build/libs/pelt-<version>.jar`. Compile-only dependencies:
-FermiumBooter 1.4.1 (CurseMaven, file id pinned in `gradle.properties`) and
+FermiumBooter 1.4.1 (CurseMaven file `7279112`, pinned in `gradle.properties`) and
 MixinBooter. MixinBooter is used only for the Mixin annotations and annotation
 processor (refmap). Neither is bundled.
 
@@ -205,7 +205,7 @@ processor (refmap). Neither is bundled.
   the jar's manifest, mixin config and refmap, and that Mixin/FermiumBooter are
   not bundled, then uploads the `pelt-jar` artifact.
 - **smoke**: installs a fresh Forge 1.12.2-14.23.5.2860 dedicated server
-  (cached), adds FermiumBooter 1.4.1 (version checked) and the built jar, sets
+  (cached), adds FermiumBooter 1.4.1 (version checked). It runs once for **each** CurseForge upload of 1.4.1, the original `7212281` and the "(Fix)" `7279112`, since either may be on prod and the built jar, sets
   `online-mode=false`, waits for `Done`, sends `skin reload` on stdin, then
   `stop`. It fails if a pelt marker line is missing, or if the log has a mixin
   error, an `ERROR`/`FATAL` line, an exception or a crash report. Logs are
